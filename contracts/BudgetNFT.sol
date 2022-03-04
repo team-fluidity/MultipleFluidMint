@@ -20,6 +20,7 @@ contract BudgetNFT is ERC721, Ownable {
     mapping(uint256 => int96) public flowRates;
 
     uint256 public nextId; //  (each stream has new id we store in flowRates)
+    uint256 public cost = .001 ether; // cost of token
 
     constructor(
         string memory _name,
@@ -37,15 +38,18 @@ contract BudgetNFT is ERC721, Ownable {
         assert(address(_host) != address(0));
         assert(address(_cfa) != address(0));
         assert(address(_acceptedToken) != address(0));
+
+        _setBaseURI("ipfs://QmR3nK6suuKmsgDZDraYF5JCJNUND3JHYgnYJXzGUohL9L/1.json");
     }
 
     event NFTIssued(uint256 tokenId, address receiver, int96 flowRate);
 
     // @dev creates the NFT, but it remains in the contract
 
-    function issueNFT() public {
+    function mintNFT() public payable {
+         require(msg.value >= cost, "insufficient funds");
         _issueNFT(msg.sender, 3858024691358);
-        _setBaseURI("ipfs://QmR3nK6suuKmsgDZDraYF5JCJNUND3JHYgnYJXzGUohL9L/1.json");
+        
     }
 
     function _issueNFT(address receiver, int96 flowRate) internal {
